@@ -746,7 +746,10 @@ async function solveAltchaIfPresent(page, stageName = "Renew阶段", maxAttempts
                         const failSafe = user.username.replace(/[^a-z0-9]/gi, '_');
                         const failScreenshot = path.join(failPhotoDir, `${failSafe}_login_fail.png`);
                         try { await saveViewportScreenshot(page, failScreenshot); } catch (e) {}
-                        await sendTelegramMessage(`❌ *${escapeMarkdown(user.username)}*\n登录失败: 账号或密码错误`, failScreenshot);
+
+                        // ✅ 使用 maskUsernameForLog 函数对邮箱进行脱敏处理
+                        
+                        await sendTelegramMessage(`❌ *${escapeMarkdown(maskUsernameForLog(user.username))}*\n登录失败: 账号或密码错误`, failScreenshot);
                         continue;
                     }
                 } catch (e) { }
@@ -864,7 +867,7 @@ async function solveAltchaIfPresent(page, stageName = "Renew阶段", maxAttempts
                                     }
 
                                     try { await saveViewportScreenshot(page, skipScreenshot); } catch (e) {}
-                                    await sendTelegramMessage(`⏳ *${escapeMarkdown(user.username)}*\n暂无法续期，下次可续期时间: ${dateStr}`, skipScreenshot);
+                                    await sendTelegramMessage(`⏳ *${escapeMarkdown(maskUsernameForLog(user.username))}*\n暂无法续期，下次可续期时间: ${dateStr}`, skipScreenshot);
                                     break;
                                 }
                                 await page.waitForTimeout(200);
@@ -890,7 +893,7 @@ async function solveAltchaIfPresent(page, stageName = "Renew阶段", maxAttempts
                             console.log('   >> ✅ Renew successful!');
                             const successScreenshot = path.join(photoDir, `${safeUsername}_success.png`);
                             try { await saveViewportScreenshot(page, successScreenshot); } catch (e) {}
-                            await sendTelegramMessage(`✅ *${escapeMarkdown(user.username)}*\n续期成功！`, successScreenshot);
+                            await sendTelegramMessage(`✅ *${escapeMarkdown(maskUsernameForLog(user.username))}*\n续期成功！`, successScreenshot);
                             renewSuccess = true;
                             break;
                         } else {
@@ -925,7 +928,7 @@ async function solveAltchaIfPresent(page, stageName = "Renew阶段", maxAttempts
                 const failSafe = user.username.replace(/[^a-z0-9]/gi, '_');
                 const failScreenshot = path.join(failDir, `${failSafe}_renew_fail.png`);
                 try { await saveViewportScreenshot(page, failScreenshot); } catch (e) {}
-                await sendTelegramMessage(`❌ *${escapeMarkdown(user.username)}*\n${renewFailureReason}`, failScreenshot);
+                await sendTelegramMessage(`❌ *${escapeMarkdown(maskUsernameForLog(user.username))}*\n${renewFailureReason}`, failScreenshot);
             }
 
         } catch (err) {
